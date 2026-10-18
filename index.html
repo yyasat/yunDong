@@ -8,6 +8,7 @@
 <link rel="stylesheet" href="css/base.css">
 <link rel="stylesheet" href="css/components.css">
 <link rel="stylesheet" href="css/pages.css">
+<link rel="stylesheet" href="css/features.css">
 <style>
 /* 引用页面内 SVG 渐变的规则保留内联，避免外部样式表中 url(#id) 的解析差异 */
 .chart-area{fill:url(#gradW)}
@@ -198,11 +199,7 @@
       </div>
       <div class="setting-row">
         <div><div class="sl">里程碑间隔</div><div class="ss">连续多少天全屏展示</div></div>
-        <select class="inp" id="sel-mile" style="width:92px;height:38px">
-          <option value="3">3 天</option><option value="5">5 天</option>
-          <option value="7">7 天</option><option value="10">10 天</option>
-          <option value="14">14 天</option>
-        </select>
+        <input class="inp" id="sel-mile" type="number" min="1" max="30" style="width:92px;height:38px;text-align:center">
       </div>
       <div class="setting-row">
         <div><div class="sl">目标体重</div><div class="ss">用于进度与里程碑</div></div>
@@ -211,6 +208,38 @@
       <div class="setting-row">
         <div><div class="sl">每日热量上限</div><div class="ss">饮食记录参考值</div></div>
         <input class="inp" id="inp-kcal" type="number" step="50" style="width:92px;height:38px;text-align:center">
+      </div>
+      <div class="setting-row">
+        <div><div class="sl">每日打卡次数</div><div class="ss">一天完成几次计划</div></div>
+        <input class="inp" id="inp-checkins" type="number" min="1" max="5" value="1" style="width:92px;height:38px;text-align:center">
+      </div>
+    </div>
+
+    <div class="sec-title">AI 管家</div>
+    <div class="card">
+      <div class="setting-row" style="flex-direction:column;align-items:stretch;gap:12px">
+        <div>
+          <div class="sl">${I.robot?I.robot(18):''} 锻炼管家</div>
+          <div class="ss">智能分析、评语、制定计划</div>
+        </div>
+        <button class="btn w ghost" id="btn-assistant-settings">${I.settings?I.settings(16):''} 管家设置</button>
+      </div>
+    </div>
+
+    <div class="sec-title">教学资源</div>
+    <div class="card">
+      <div class="setting-row" style="flex-direction:column;align-items:stretch;gap:8px">
+        <button class="btn w ghost" id="btn-videos">${I.video?I.video(16):''} 视频库 (${S.videos?S.videos.length:0})</button>
+        <button class="btn w ghost" id="btn-exercise-groups">${I.list(16)} 动作组管理</button>
+        <button class="btn w ghost" id="btn-receipts">${I.receipt?I.receipt(16):''} 打卡小票库</button>
+      </div>
+    </div>
+
+    <div class="sec-title">历史记录</div>
+    <div class="card">
+      <div class="setting-row" style="flex-direction:column;align-items:stretch;gap:8px">
+        <button class="btn w ghost" id="btn-water-history">${I.water(16)} 饮水历史</button>
+        <button class="btn w ghost" id="btn-meal-history">${I.food(16)} 餐饮历史</button>
       </div>
     </div>
 
@@ -239,6 +268,12 @@
 <!-- 普通脚本按原顺序加载，共享全局作用域，行为与单文件一致 -->
 <script src="js/icons.js"></script>
 <script src="js/store.js"></script>
+<script src="js/timer.js"></script>
+<script src="js/assistant.js"></script>
+<script src="js/receipt.js"></script>
+<script src="js/video.js"></script>
+<script src="js/exercise.js"></script>
+<script src="js/history.js"></script>
 <script src="js/today.js"></script>
 <script src="js/quiz.js"></script>
 <script src="js/milestone.js"></script>
