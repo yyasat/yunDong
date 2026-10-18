@@ -54,10 +54,11 @@ function openDaySheet(k){
   const d=parseD(k), day=S.days[k], st=dayStat(k), w=S.weights[k];
   const weightValue = w ? (typeof w === 'object' ? w.value : w) : null;
   const isFuture = k>TODAY_KEY();
+  const isToday = k === TODAY_KEY();
   const tasks = day&&day.tasks.length ? day.tasks.map(t=>
     `<div class="food"><div class="fi">${I[ICON_MAP[t.type]||'spark'](17)}</div>
      <div style="flex:1"><b>${esc(t.name)}</b><span>${esc(t.cat||'')} · ${t.dur}分钟</span></div>
-     <div class="fk" style="color:${t.done?'var(--accent)':'var(--text-3)'}">${t.done?'已完成':'—'}</div></div>`).join('')
+     <div class="fk" style="color:${t.done?'var(--accent)':'var(--text-3)'}\">${t.done?'已完成':'—'}</div></div>`).join('')
     : `<p class="fs12 muted tc" style="padding:18px 0">这天没有记录</p>`;
   const moodTxt = day&&day.mood ? ['','有点吃力','正常','很轻松'][day.mood] : '—';
   
@@ -71,6 +72,9 @@ function openDaySheet(k){
   // 添加小票查看按钮
   const receiptBtn = S.receipts?.[k] ? `<button class="btn w ghost sm" id="d-receipt" style="margin-bottom:9px">${I.receipt?I.receipt(16):''} 查看打卡小票</button>` : '';
   
+  // 今日可编辑任务
+  const editableTask = isToday ? '' : `<button class="btn w ghost sm" id="d-edit-tasks" style="margin-bottom:9px">${I.edit(16)} 编辑这天的任务</button>`;
+  
   $('#sheet-body').innerHTML=`
     <h2>${d.getMonth()+1}月${d.getDate()}日 · ${WD[wdIdx(d)]}</h2>
     <div class="stat-row" style="margin-bottom:16px">
@@ -82,8 +86,9 @@ function openDaySheet(k){
     ${feeling}
     ${timeBtn}
     ${receiptBtn}
+    ${editableTask}
     <div class="field"><label>这天的体重</label>
-      <input class="inp" id="d-w" type="number" step="0.1" inputmode="decimal" value="${weightValue||''}" placeholder="未记录"></div>
+      <input class="inp" id="d-w" type="number" step="0.1" inputmode="decimal" placeholder="未记录"></div>
     ${isFuture?'':`<button class="btn w ghost sm" id="d-load" style="margin-bottom:9px">按计划表载入这天的项目</button>`}
     <button class="btn w" id="d-save">保存</button>`;
   
@@ -124,4 +129,89 @@ function openDaySheet(k){
     save(); closeSheet(); renderAll();
   };
   openSheet();
+}  
+  // 设置体重输入框的值（不使用value属性避免默认填充）
+  setTimeout(() => {
+    const wInput = $('#d-w');
+    if (wInput && weightValue) {
+      wInput.value = weightValue;
+    }
+  }, 100);
+  
+  // 编辑任务按钮
+  const editBtn = $('#d-edit-tasks');
+  if (editBtn) {
+    editBtn.onclick = () => {
+      closeSheet();
+      setTimeout(() => openEditDayTasks(k), 300);
+    };
+  }
+
+// 编辑指定日期的任务
+function openEditDayTasks(dateKey) {
+  const day = getDay(dateKey, true);
+  const d = parseD(dateKey);
+  
+  const tasksHtml = day.tasks.map(t => `
+    <div class="task-edit-item">
+      <div class="task-info">
+        <div class="fi">${I[ICON_MAP[t.type]||'spark'](17)}</div>
+        <div style="flex:1">
+          <b>${esc(t.name)}</b>
+          <span>${esc(t.cat||'')} · ${t.dur}分钟</span>
+        </div>
+        <input type="checkbox" ${t.done?'checked':''} data-id="${t.id}">
+      </div>
+    </div>
+  `).join('');
+  
+  $('#sheet-body').innerHTML = `
+    <h2>${d.getMonth()+1}月${d.getDate()}日 任务编辑</h2>
+    <p class="hint">可以补充完成状态或修改这天的记录</p>
+    
+    <div class="tasks-edit-container">
+      ${tasksHtml || '<p class="muted tc">这天还没有任务</p>'}
+    </div>
+    
+    <button class="btn w soft" id="add-task-btn" style="margin-top:12px">${I.plus(16)} 添加任务</button>
+    <button class="btn w" id="save-tasks-btn" style="margin-top:8px">保存修改</button>
+    <button class="btn w ghost" onclick="closeSheet()">取消</button>
+  `;
+  
+  openSheet();
+  
+  // 保存按钮
+  $('#save-tasks-btn').onclick = () => {
+    // 更新完成状态
+    document.querySelectorAll('[data-id]').forEach(cb => {
+      const task = day.tasks.find(t => t.id === cb.dataset.id);
+      if (task) task.done = cb.checked;
+    });
+    
+    save();
+    closeSheet();
+    renderCal();
+    toast(null, '已保存', '任务已更新', 'check');
+  };
+  
+  // 添加任务按钮
+  $('#add-task-btn').onclick = () => {
+    const name = prompt('任务名称：');
+    if (!name || !name.trim()) return;
+    
+    const dur = parseInt(prompt('时长（分钟）：', '10')) || 10;
+    
+    day.tasks.push({
+      id: uid(),
+      name: name.trim(),
+      cat: '自定义',
+      dur: dur,
+      type: 'other',
+      done: false
+    });
+    
+    save();
+    closeSheet();
+    setTimeout(() => openEditDayTasks(dateKey), 300);
+  };
 }

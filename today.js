@@ -72,13 +72,23 @@ function renderToday(){
   }
 
   // 薄背每天必做
-  const bd = PLAN.backDaily.map(([n,v])=>`<div class="food"><div class="fi">${I.back(17)}</div><div style="flex:1"><b>${n}</b></div><div class="fk">${v[ph]}</div></div>`).join('');
+  const bd = PLAN.backDaily.map(([n,v])=>`<div class="food clickable-action" data-action="${n}"><div class="fi">${I.back(17)}</div><div style="flex:1"><b>${n}</b></div><div class="fk">${v[ph]}</div></div>`).join('');
   if(!$('#back-daily')){
     const sec = document.createElement('div');
     sec.innerHTML = `<div class="sec-title">薄背每天必做 · 无器械</div><div class="card" id="back-daily"></div>`;
     $('#v-today').appendChild(sec);
   }
   $('#back-daily').innerHTML = bd;
+  
+  // 绑定薄背动作点击事件
+  $$('.clickable-action').forEach(el => {
+    el.onclick = () => {
+      const actionName = el.dataset.action;
+      if(typeof openBackExerciseDetail === 'function') {
+        openBackExerciseDetail(actionName);
+      }
+    };
+  });
   
   // 渲染总计时器
   if(typeof renderTotalTimerControl === 'function') {

@@ -188,15 +188,17 @@
 }
 
 .receipt-paper-v2 {
-  background: linear-gradient(180deg, #fdfbf7 0%, #ffffff 100%);
+  background: var(--card);
   border-radius: 20px 20px 8px 8px;
   box-shadow: 
     0 30px 80px rgba(0,0,0,0.25),
     0 10px 30px rgba(0,0,0,0.15),
-    inset 0 1px 0 rgba(255,255,255,0.8);
+    inset 0 1px 0 rgba(255,255,255,0.1);
   overflow: hidden;
   position: relative;
-  border: 1px solid rgba(0,0,0,0.06);
+  border: 1px solid var(--line);
+  max-height: 85vh;
+  overflow-y: auto;
 }
 
 .receipt-paper-v2.torn .receipt-bottom-v2 {
@@ -238,9 +240,9 @@
 .receipt-top-v2 {
   padding: 0 28px 28px;
   background: linear-gradient(165deg, 
-    rgba(107,138,168,0.08) 0%, 
-    rgba(255,255,255,0.4) 40%,
-    rgba(255,255,255,0.8) 100%);
+    var(--surface-2) 0%, 
+    var(--surface) 40%,
+    var(--card) 100%);
   position: relative;
 }
 
@@ -361,7 +363,7 @@
 /* 下半部分 */
 .receipt-bottom-v2 {
   padding: 24px 28px 28px;
-  background: #ffffff;
+  background: var(--card);
 }
 
 .receipt-stats-grid {
@@ -375,8 +377,8 @@
   text-align: center;
   padding: 16px 12px;
   border-radius: 12px;
-  background: linear-gradient(135deg, #f8f9fa 0%, #ffffff 100%);
-  border: 1px solid rgba(0,0,0,0.04);
+  background: var(--surface-2);
+  border: 1px solid var(--line);
   transition: all 0.3s var(--ease);
 }
 
@@ -386,9 +388,7 @@
 }
 
 .stat-item.highlight {
-  background: linear-gradient(135deg, 
-    rgba(107,138,168,0.08) 0%, 
-    rgba(107,138,168,0.03) 100%);
+  background: var(--accent-soft);
   border-color: var(--accent);
 }
 
@@ -513,7 +513,7 @@
 }
 
 .btn-receipt-action.secondary {
-  background: #ffffff;
+  background: var(--surface);
   color: var(--text-2);
   border: 2px solid var(--line);
 }
@@ -1513,4 +1513,41 @@
   .rv-num b {
     font-size: 54px;
   }
+}
+
+/* 任务编辑和可点击动作 */
+.clickable-action {
+  cursor: pointer;
+  transition: all 0.2s var(--ease);
+}
+
+.clickable-action:hover {
+  background: var(--hover);
+  transform: translateX(2px);
+}
+
+.task-edit-item {
+  padding: 12px;
+  border-radius: 10px;
+  background: var(--surface);
+  margin-bottom: 10px;
+  border: 1px solid var(--line);
+}
+
+.task-info {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.task-info input[type="checkbox"] {
+  width: 20px;
+  height: 20px;
+  cursor: pointer;
+}
+
+.tasks-edit-container {
+  max-height: 50vh;
+  overflow-y: auto;
+  padding: 4px;
 }

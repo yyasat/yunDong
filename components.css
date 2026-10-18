@@ -14,8 +14,8 @@
 .ring-bg{fill:none;stroke:var(--line-strong);stroke-width:7}
 .ring-fg{fill:none;stroke:var(--accent);stroke-width:7;stroke-linecap:round;
   transition:stroke-dashoffset 1s var(--ease)}
-.ring-txt{position:absolute;inset:0;display:grid;place-content:center;text-align:center}
-.ring-txt b{display:block;font-size:27px;font-weight:650;letter-spacing:-.03em;line-height:1}
+.ring-txt{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center}
+.ring-txt b{display:block;font-size:27px;font-weight:650;letter-spacing:-.03em;line-height:1;margin-bottom:2px}
 .ring-txt span{font-size:10px;letter-spacing:.14em;color:var(--text-3);text-transform:uppercase;font-weight:600}
 .hero-info{flex:1;min-width:0}
 .hero-info .ph{font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--accent);font-weight:700}
@@ -59,7 +59,7 @@
   border:1.6px solid var(--line-strong);background:transparent;
   display:grid;place-items:center;transition:.36s var(--ease);
 }
-.tick svg{width:16px;height:16px;overflow:visible}
+.tick svg{width:16px;height:16px;overflow:visible;display:block;margin:0 auto}
 .tick path{
   fill:none;stroke:#fff;stroke-width:2.6;stroke-linecap:round;stroke-linejoin:round;
   stroke-dasharray:24;stroke-dashoffset:24;

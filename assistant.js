@@ -285,9 +285,12 @@ function openAssistantSettings() {
     <div class="field">
       <label>启用功能</label>
       <div class="check-group">
-        <label><input type="checkbox" ${ast.enabledFeatures?.includes('food')?'checked':''} value="food"> 饮食分析</label>
-        <label><input type="checkbox" ${ast.enabledFeatures?.includes('comment')?'checked':''} value="comment"> 今日评语</label>
-        <label><input type="checkbox" ${ast.enabledFeatures?.includes('plan')?'checked':''} value="plan"> 制定计划</label>
+        <label><input type="checkbox" ${ast.enabledFeatures?.includes('food')?'checked':''} value="food"> 饮食热量分析</label>
+        <label><input type="checkbox" ${ast.enabledFeatures?.includes('comment')?'checked':''} value="comment"> 今日锻炼评语</label>
+        <label><input type="checkbox" ${ast.enabledFeatures?.includes('plan')?'checked':''} value="plan"> 制定训练计划</label>
+        <label><input type="checkbox" ${ast.enabledFeatures?.includes('motivation')?'checked':''} value="motivation"> 动机激励与鼓舞</label>
+        <label><input type="checkbox" ${ast.enabledFeatures?.includes('qa')?'checked':''} value="qa"> 健身问答咨询</label>
+        <label><input type="checkbox" ${ast.enabledFeatures?.includes('progress')?'checked':''} value="progress"> 进度分析与建议</label>
       </div>
     </div>
     

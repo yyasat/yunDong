@@ -120,7 +120,8 @@ let videoTimerState = {
   duration: 0,
   elapsed: 0,
   interval: null,
-  videoElement: null
+  videoElement: null,
+  lastDate: null
 };
 
 // 播放视频

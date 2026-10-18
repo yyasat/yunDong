@@ -363,7 +363,100 @@ function openExerciseGroupEditor(group = null) {
   };
 }
 
-// 初始化
-setTimeout(() => {
-  initExerciseLibrary();
-}, 500);
+// 薄背动作详情
+const BACK_EXERCISE_DETAILS = {
+  '靠墙站': {
+    name: '靠墙站',
+    description: '改善体态，拉直脊柱，矫正圆肩驼背',
+    howTo: `1. 背靠墙站立，双脚离墙约10-15厘米
+2. 后脑勺、肩胛骨、臀部、小腿、脚跟五点贴墙
+3. 收紧核心，不要塌腰
+4. 下巴微收，眼睛平视前方
+5. 保持自然呼吸，坚持规定时间`,
+    tips: '初期可能很累，坚持就会改善，可以分组完成'
+  },
+  '肩胛骨后缩': {
+    name: '肩胛骨后缩',
+    description: '激活菱形肌，改善圆肩，增强后背力量',
+    howTo: `1. 站立或坐姿，背部挺直
+2. 双臂自然垂放或前平举
+3. 用力向后夹紧肩胛骨
+4. 保持1-2秒后放松
+5. 重复指定次数`,
+    tips: '注意是肩胛骨往后夹，不是耸肩，感受背部中间用力'
+  },
+  '俯身飞鸟': {
+    name: '俯身飞鸟',
+    description: '锻炼后肩和中背部，消除背部赘肉',
+    howTo: `1. 俯身45度，膝盖微屈，背部挺直
+2. 双手自然下垂或持轻哑铃
+3. 双臂向两侧打开至与肩同高
+4. 夹紧肩胛骨，顶峰收缩1秒
+5. 缓慢还原，重复动作`,
+    tips: '用背部发力，不要用手臂甩，慢动作更有效'
+  },
+  '面拉（徒手慢做）': {
+    name: '面拉（徒手慢做）',
+    description: '针对后肩和斜方肌中下束，改善体态',
+    howTo: `1. 站立，双手握拳放在面前
+2. 手肘外展，向后拉至耳朵两侧
+3. 想象手肘往后夹
+4. 保持1秒后缓慢还原
+5. 徒手版注重慢动作和顶峰收缩`,
+    tips: '保持手肘与肩同高，不要向下拉'
+  },
+  '拉伸斜方肌': {
+    name: '拉伸斜方肌',
+    description: '放松颈肩，缓解斜方肌紧张',
+    howTo: `1. 坐姿或站立，背部挺直
+2. 头部缓慢侧向一边
+3. 对侧手可轻按头部辅助
+4. 感受颈侧拉伸感
+5. 每边保持30秒以上，不要弹震`,
+    tips: '拉伸要温和，不要用力过猛，保持深呼吸'
+  },
+  '拉伸胸肌': {
+    name: '拉伸胸肌',
+    description: '打开胸腔，改善含胸，配合薄背训练效果更好',
+    howTo: `1. 站在墙角或门框旁
+2. 手臂屈肘90度贴墙
+3. 身体前倾，感受胸部拉伸
+4. 或双手在身后交叉，挺胸
+5. 每边保持30秒以上`,
+    tips: '配合深呼吸，拉伸时想象打开胸腔'
+  }
+};
+
+// 打开薄背动作详情
+function openBackExerciseDetail(actionName) {
+  const exercise = BACK_EXERCISE_DETAILS[actionName];
+  
+  if (!exercise) {
+    toast(null, '暂无详情', '该动作还没有添加说明', 'close');
+    return;
+  }
+  
+  $('#sheet-body').innerHTML = `
+    <div class="exercise-detail-header">
+      <div class="exercise-icon">${I.back(32)}</div>
+      <div>
+        <h2>${esc(exercise.name)}</h2>
+        <p class="hint">${esc(exercise.description)}</p>
+      </div>
+    </div>
+    
+    <div class="exercise-section">
+      <h3>${I.list(18)} 动作要领</h3>
+      <div class="exercise-content">${esc(exercise.howTo).replace(/\n/g, '<br>')}</div>
+    </div>
+    
+    <div class="exercise-section">
+      <h3>${I.spark(18)} 注意事项</h3>
+      <div class="exercise-content">${esc(exercise.tips)}</div>
+    </div>
+    
+    <button class="btn w ghost" onclick="closeSheet()">关闭</button>
+  `;
+  
+  openSheet();
+}

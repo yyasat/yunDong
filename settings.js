@@ -128,8 +128,10 @@ $('#btn-edit-profile').addEventListener('click',()=>{
       <div style="display:flex;align-items:center;gap:12px">
         <div class="avatar" id="preview-av" style="width:60px;height:60px;font-size:24px">${p.avatar?'':'轻'}</div>
         <div style="flex:1">
-          <input class="inp" id="p-avatar" placeholder="输入图片 URL" value="${esc(p.avatar||'')}">
-          <p class="hint" style="margin:4px 0 0">可粘贴图片链接或使用 data:image/...</p>
+          <input type="file" id="p-avatar-file" accept="image/*" style="display:none">
+          <button class="btn sm soft" id="p-avatar-btn" style="margin-bottom:6px">${I.up(14)} 选择图片</button>
+          <input class="inp" id="p-avatar" placeholder="或输入图片 URL" value="${esc(p.avatar||'')}">
+          <p class="hint" style="margin:4px 0 0">支持本地相册选择，不压缩画质</p>
         </div>
       </div>
     </div>
@@ -149,6 +151,24 @@ $('#btn-edit-profile').addEventListener('click',()=>{
     <div class="field"><label>起始体重 (kg) · 用于计算变化</label><input class="inp" id="p-sw" type="number" step="0.1" inputmode="decimal" value="${p.startWeight}"></div>
     <button class="btn w" id="p-ok">保存</button>`;
   openSheet();
+  
+  // 本地图片上传（不压缩）
+  $('#p-avatar-btn').onclick = () => $('#p-avatar-file').click();
+  $('#p-avatar-file').onchange = (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onload = (event) => {
+        const dataUrl = event.target.result;
+        $('#p-avatar').value = dataUrl;
+        const preview = $('#preview-av');
+        preview.style.backgroundImage = `url(${dataUrl})`;
+        preview.style.backgroundSize = 'cover';
+        preview.textContent = '';
+      };
+      reader.readAsDataURL(file);
+    }
+  };
   
   // 实时预览头像
   $('#p-avatar').addEventListener('input', e => {

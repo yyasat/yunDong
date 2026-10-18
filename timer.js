@@ -8,7 +8,8 @@ let totalTimer = {
   running: false,
   startTime: null,
   elapsed: 0,
-  interval: null
+  interval: null,
+  lastDate: null
 };
 
 // 各动作计时器
@@ -28,7 +29,16 @@ function startTotalTimer() {
   if (totalTimer.running) return;
   
   const day = ensureToday();
+  const today = TODAY_KEY();
+  
+  // 检查是否新的一天，如果是则重置
+  if (totalTimer.lastDate && totalTimer.lastDate !== today) {
+    totalTimer.elapsed = 0;
+    totalTimer.startTime = null;
+  }
+  
   totalTimer.running = true;
+  totalTimer.lastDate = today;
   totalTimer.startTime = Date.now() - (totalTimer.elapsed * 1000);
   
   if (!day.startTime) {

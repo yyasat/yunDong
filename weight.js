@@ -96,7 +96,7 @@ function openWeightSheet(){
     <div class="field">
       <label>体重</label>
       <div class="row2">
-        <input class="inp" id="nw-v" type="number" step="0.1" inputmode="decimal" placeholder="输入体重" value="${currentValue}">
+        <input class="inp" id="nw-v" type="number" step="0.1" inputmode="decimal" placeholder="输入体重">
         <select class="inp" id="nw-unit" style="width:100px">
           <option value="kg" ${currentUnit==='kg'?'selected':''}>千克 (kg)</option>
           <option value="lb" ${currentUnit==='lb'?'selected':''}>磅 (lb)</option>
@@ -106,7 +106,11 @@ function openWeightSheet(){
     </div>
     <button class="btn w" id="nw-ok">保存</button>`;
   openSheet();
-  setTimeout(()=>$('#nw-v').focus(),420);
+  setTimeout(()=>{
+    const inp = $('#nw-v');
+    if(currentValue) inp.value = currentValue;
+    inp.focus();
+  },420);
   $('#nw-ok').onclick=()=>{
     const d=$('#nw-d').value, v=parseFloat($('#nw-v').value), unit=$('#nw-unit').value;
     if(!d||isNaN(v)||v<10||v>1000) return toast(null,'请检查输入','请输入有效体重','close');
