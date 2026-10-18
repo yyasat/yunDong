@@ -77,12 +77,36 @@ const ICON_MAP = {jump:'rope',aerobic:'aerobic',back:'back',core:'core',stretch:
 const TYPE_TAG = {'跳绳':'c3','燃脂操':'','薄背':'c1','核心':'c2','手臂':'c1','拉伸':'c2','瘦全身':''};
 
 const DEFAULT = {
-  profile:{name:'',gender:'',age:'',height:'',weight:54.8,birthday:'',shape:'',startWeight:54.8},
-  settings:{theme:'auto',food:false,cheer:true,quiz:true,mile:7,goal:52.8,kcal:1500,autoAdjust:true,phase:0},
-  days:{},        // 'YYYY-MM-DD': {tasks:[{id,name,type,dur,done}], mood:null, energy:null, soreness:null, note:''}
-  weights:{},     // 'YYYY-MM-DD': number
-  meals:{},       // 'YYYY-MM-DD': {items:[{id,slot,name,kcal}], water:0}
-  meta:{lastMile:0, seenMiles:[], installed:fmt(new Date())}
+  profile:{name:'',gender:'',age:'',height:'',weight:54.8,birthday:'',shape:'',startWeight:54.8,avatar:''},
+  settings:{
+    theme:'auto',food:false,cheer:true,quiz:true,mile:7,goal:52.8,kcal:1500,autoAdjust:true,phase:0,
+    weightUnit:'kg',dailyCheckIns:1,
+    // AI管家设置
+    assistant:{
+      enabled:false,
+      name:'管家',
+      apiUrl:'',
+      apiKey:'',
+      model:'',
+      personality:'',
+      globalMode:false,
+      clickThreshold:10,
+      enabledFeatures:[]
+    }
+  },
+  days:{},        // 'YYYY-MM-DD': {tasks:[{id,name,type,dur,done,timeSpent}], mood:null, energy:null, soreness:null, note:'', totalTime:0, startTime:'', endTime:'', planMode:'original', feeling:''}
+  weights:{},     // 'YYYY-MM-DD': {value:number, unit:'kg'}
+  meals:{},       // 'YYYY-MM-DD': {items:[{id,slot,name,kcal}], water:0, waterHistory:[]}
+  mealHistory:{}, // 'YYYY-MM-DD': [{time,slot,name,kcal}]
+  waterHistory:{},// 'YYYY-MM-DD': [{time,amount}]
+  meta:{lastMile:0, seenMiles:[], installed:fmt(new Date())},
+  // 新增数据结构
+  receipts:{},    // 'YYYY-MM-DD': {quote:'', weight:number, date:''}
+  exercises:{},   // 动作库：{id: {name, description, hasJump, duration, type}}
+  exerciseGroups:[], // 自定义动作组
+  videos:[],      // 视频链接：{id, url, platform, title, date}
+  personalityTemplates:[], // 人格模板：{id, name, content, isDefault}
+  timerRecords:{} // 'YYYY-MM-DD': {total:{start,end,duration}, exercises:[{id,start,end,duration}]}
 };
 
 // 兼容旧内核：用 JSON 深拷贝替代 structuredClone
@@ -116,15 +140,18 @@ const uid = () => Math.random().toString(36).slice(2,9);
    ============================================================ */
 function phaseOf(){ return Math.min(2, Math.max(0, S.settings.phase|0)) }
 
-function buildPlan(dateStr){
+function buildPlan(dateStr, jumpMode){
   const d = parseD(dateStr), wi = wdIdx(d), ph = phaseOf();
   const items = PLAN.week[wi].p[ph];
-  return items.map(([name,type,cat,dur])=>({id:uid(),name,type,cat,dur,done:false}));
+  return items.map(([name,type,cat,dur])=>({
+    id:uid(),name,type,cat,dur,done:false,
+    timeSpent:0,hasJump:(type==='jump'),jumpMode:jumpMode||'none'
+  }));
 }
 function getDay(dateStr, create=false){
   let day = S.days[dateStr];
   if(!day && create){
-    day = S.days[dateStr] = {tasks:[], mood:null, energy:null, soreness:null, note:'', adj:0};
+    day = S.days[dateStr] = {tasks:[], mood:null, energy:null, soreness:null, note:'', adj:0, planMode:'original', feeling:'', totalTime:0, startTime:'', endTime:''};
   }
   return day;
 }
@@ -154,3 +181,25 @@ function streak(){
   return n;
 }
 function totalDays(){ return Object.keys(S.days).filter(k=>dayStat(k).full).length }
+
+/* ============================================================
+   体重相关
+   ============================================================ */
+function weightSeries(){
+  const arr = Object.entries(S.weights).map(([d,w])=>{
+    // 兼容旧格式（直接数字）和新格式（对象）
+    const val = typeof w === 'object' ? w.value : w;
+    const unit = typeof w === 'object' ? w.unit : 'kg';
+    return {d,v:val,u:unit};
+  }).sort((a,b)=>a.d.localeCompare(b.d));
+  return arr;
+}
+function smooth(pts){
+  if(pts.length<2) return `M${pts[0][0]},${pts[0][1]}`;
+  let d=`M${pts[0][0].toFixed(1)},${pts[0][1].toFixed(1)}`;
+  for(let i=0;i<pts.length-1;i++){
+    const t=.4, x1=pts[i][0]+t*(pts[i+1][0]-pts[i][0]), y1=pts[i][1], x2=pts[i+1][0]-t*(pts[i+1][0]-pts[i][0]), y2=pts[i+1][1];
+    d+=` C${x1.toFixed(1)},${y1.toFixed(1)} ${x2.toFixed(1)},${y2.toFixed(1)} ${pts[i+1][0].toFixed(1)},${pts[i+1][1].toFixed(1)}`;
+  }
+  return d;
+}

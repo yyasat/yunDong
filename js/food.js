@@ -62,6 +62,12 @@ function renderFood(){
   $$('[data-cup]').forEach(c=>c.onclick=()=>{
     const n=+c.dataset.cup;
     m.water = m.water===n ? n-1 : n;
+    
+    // 记录到历史
+    if(m.water > (m.water===n ? n-1 : n-1) && typeof addWaterToHistory === 'function') {
+      addWaterToHistory(TODAY_KEY(), 250); // 每杯250ml
+    }
+    
     save(); renderFood();
     if(m.water>=8) toast(null,'饮水达标','8 杯水完成，身体会轻一点。','water');
   });
@@ -90,7 +96,15 @@ function openFoodSheet(slot){
   });
   $('#fs-ok').onclick=()=>{
     const n=$('#fs-n').value.trim(); if(!n) return toast(null,'请输入名称','','close');
-    todayMeal().items.push({id:uid(),slot:sel,name:n,kcal:parseInt($('#fs-k').value)||0});
+    const kcal = parseInt($('#fs-k').value)||0;
+    todayMeal().items.push({id:uid(),slot:sel,name:n,kcal:kcal});
+    
+    // 记录到历史
+    if(typeof addMealToHistory === 'function') {
+      const slotNames = ['breakfast', 'lunch', 'dinner', 'snack'];
+      addMealToHistory(TODAY_KEY(), slotNames[sel], n, kcal);
+    }
+    
     save(); mealSlot=sel; closeSheet(); renderFood();
   };
 }

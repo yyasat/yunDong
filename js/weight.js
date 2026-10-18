@@ -85,21 +85,39 @@ $('#btn-quick-weight').addEventListener('click',()=>openWeightSheet());
 
 function openWeightSheet(){
   const k=TODAY_KEY();
+  const currentWeight = S.weights[k];
+  const currentValue = currentWeight ? (typeof currentWeight === 'object' ? currentWeight.value : currentWeight) : '';
+  const currentUnit = currentWeight && typeof currentWeight === 'object' ? currentWeight.unit : S.settings.weightUnit || 'kg';
+  
   $('#sheet-body').innerHTML=`
     <h2>记录体重</h2>
     <p class="hint">空腹、同一时间称量，数字更有参考价值。</p>
     <div class="field"><label>日期</label><input class="inp" id="nw-d" type="date" value="${k}" max="${k}"></div>
-    <div class="field"><label>体重 (kg)</label><input class="inp" id="nw-v" type="number" step="0.1" inputmode="decimal" value="${S.weights[k]||S.profile.weight||''}"></div>
+    <div class="field">
+      <label>体重</label>
+      <div class="row2">
+        <input class="inp" id="nw-v" type="number" step="0.1" inputmode="decimal" placeholder="输入体重" value="${currentValue}">
+        <select class="inp" id="nw-unit" style="width:100px">
+          <option value="kg" ${currentUnit==='kg'?'selected':''}>千克 (kg)</option>
+          <option value="lb" ${currentUnit==='lb'?'selected':''}>磅 (lb)</option>
+          <option value="jin" ${currentUnit==='jin'?'selected':''}>斤</option>
+        </select>
+      </div>
+    </div>
     <button class="btn w" id="nw-ok">保存</button>`;
   openSheet();
   setTimeout(()=>$('#nw-v').focus(),420);
   $('#nw-ok').onclick=()=>{
-    const d=$('#nw-d').value, v=parseFloat($('#nw-v').value);
-    if(!d||isNaN(v)||v<20||v>300) return toast(null,'请检查输入','体重需在 20–300 kg 之间','close');
-    S.weights[d]=+v.toFixed(1);
+    const d=$('#nw-d').value, v=parseFloat($('#nw-v').value), unit=$('#nw-unit').value;
+    if(!d||isNaN(v)||v<10||v>1000) return toast(null,'请检查输入','请输入有效体重','close');
+    
+    // 保存为对象格式，包含单位
+    S.weights[d]={value: +v.toFixed(1), unit: unit};
+    S.settings.weightUnit = unit; // 记住用户选择的单位
+    
     if(d===k) S.profile.weight=+v.toFixed(1);
     if(!Object.keys(S.weights).length||d<=Object.keys(S.weights).sort()[0]) S.profile.startWeight=S.profile.startWeight||+v.toFixed(1);
     save(); closeSheet(); renderAll();
-    toast(null,'已记录',`${d} · ${v.toFixed(1)} kg`,'scale');
+    toast(null,'已记录',`${d} · ${v.toFixed(1)} ${unit}`,'scale');
   };
 }

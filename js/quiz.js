@@ -86,12 +86,27 @@ function finishQuiz(){
     ${upHint}
     <div class="field" style="margin-top:14px">
       <label>今日体重（可选）</label>
-      <input class="inp" id="q-weight" type="number" step="0.1" inputmode="decimal" placeholder="${S.weights[TODAY_KEY()]||S.profile.weight||''}">
+      <input class="inp" id="q-weight" type="number" step="0.1" inputmode="decimal" placeholder="${S.weights[TODAY_KEY()]?'':'输入体重'}">
+    </div>
+    <div class="field">
+      <label>今日感悟（可选）</label>
+      <textarea class="inp" id="q-feeling" rows="3" placeholder="记录今天的感受、体会或想法..."></textarea>
     </div>
     <button class="btn w" id="q-done" style="margin-top:4px">完成</button>`;
   $('#q-done').addEventListener('click',()=>{
     const v = parseFloat($('#q-weight').value);
-    if(!isNaN(v) && v>20 && v<300){ S.weights[TODAY_KEY()]=+v.toFixed(1); S.profile.weight=+v.toFixed(1) }
+    if(!isNaN(v) && v>20 && v<300){ 
+      S.weights[TODAY_KEY()]={value: +v.toFixed(1), unit: 'kg'}; 
+      S.profile.weight=+v.toFixed(1);
+    }
+    
+    // 保存今日感悟
+    const feeling = $('#q-feeling').value.trim();
+    if(feeling) {
+      const day = ensureToday();
+      day.feeling = feeling;
+    }
+    
     save(); closeSheet();
     setTimeout(()=>{ cheerFull(); checkMilestone(); renderAll() }, 260);
   });

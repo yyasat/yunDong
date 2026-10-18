@@ -21,7 +21,11 @@ function renderToday(){
   $('#t-date').textContent = `${d.getMonth()+1}月${d.getDate()}日 · ${WD[wdIdx(d)]}`;
   $('#t-greet').textContent = greet();
   const st = dayStat(k);
-  $('#t-sub').textContent = st.total ? (st.full ? '今日全部完成，漂亮。' : `还有 ${st.total-st.done} 项待完成`) : '尚未载入今日计划';
+  
+  // 添加模式切换显示
+  const planMode = day.planMode || 'original';
+  const modeText = planMode === 'original' ? '原计划' : '自拟计划';
+  $('#t-sub').textContent = st.total ? (st.full ? `今日全部完成（${modeText}），漂亮。` : `还有 ${st.total-st.done} 项待完成 · ${modeText}`) : '尚未载入今日计划';
 
   const pct = st.total ? Math.round(st.done/st.total*100) : 0;
   const C = 2*Math.PI*45;
@@ -50,7 +54,10 @@ function renderToday(){
       return `<div class="task ${t.done?'done':''}" data-id="${t.id}">
         <div class="tick">${I.check()}</div>
         <div class="t-body">
-          <div class="t-name"><span class="strike">${esc(t.name)}</span></div>
+          <div class="t-name">
+            <span class="strike">${esc(t.name)}</span>
+            <button class="mini-btn" data-detail="${t.cat||t.name}" title="查看动作详情">${I.info(14)}</button>
+          </div>
           <div class="t-meta">
             <span class="tag ${tag}">${esc(t.cat||'运动')}</span>
             <span class="t-dur">${I.clock(11)} ${t.dur} 分钟</span>
@@ -72,14 +79,20 @@ function renderToday(){
     $('#v-today').appendChild(sec);
   }
   $('#back-daily').innerHTML = bd;
+  
+  // 渲染总计时器
+  if(typeof renderTotalTimerControl === 'function') {
+    renderTotalTimerControl();
+  }
 }
 function esc(s){return String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
 
 /* 打卡交互 */
 $('#task-list').addEventListener('click', e=>{
-  const del = e.target.closest('[data-del]'), ed = e.target.closest('[data-edit]');
+  const del = e.target.closest('[data-del]'), ed = e.target.closest('[data-edit]'), detail = e.target.closest('[data-detail]');
   if(del){ e.stopPropagation(); delTask(del.dataset.del); return }
   if(ed){ e.stopPropagation(); openTaskSheet(ed.dataset.edit); return }
+  if(detail){ e.stopPropagation(); if(typeof openExerciseDetail === 'function') openExerciseDetail(detail.dataset.detail); return }
   const row = e.target.closest('.task');
   if(row) toggleTask(row.dataset.id, row);
 });
@@ -106,7 +119,21 @@ function toggleTask(id, el){
   $('#t-sub').textContent = st.full?'今日全部完成，漂亮。':`还有 ${st.total-st.done} 项待完成`;
 
   if(st.full && !wasFull){
-    setTimeout(()=>onAllDone(), 620);
+    setTimeout(()=>{
+      onAllDone();
+      // 触发打卡小票
+      if(typeof onAllDoneWithReceipt === 'function') {
+        onAllDoneWithReceipt();
+      }
+      // 生成今日评语（如果启用）
+      if(S.settings.assistant?.enabled && S.settings.assistant?.enabledFeatures?.includes('comment') && typeof generateDailyComment === 'function') {
+        setTimeout(() => generateDailyComment(), 2000);
+      }
+      // 计算总耗时
+      if(typeof calculateTotalFromExercises === 'function') {
+        calculateTotalFromExercises();
+      }
+    }, 620);
   } else if(t.done && S.settings.cheer){
     const m = ['稳。','这一下算数了。','节奏对了。','又近一点。','背会记得你今天的努力。'];
     toast(I.check?null:null, '已完成', m[Math.floor(Math.random()*m.length)], 'spark');

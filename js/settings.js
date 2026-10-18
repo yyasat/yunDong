@@ -5,7 +5,17 @@
 const SHAPES=['偏瘦','标准','微胖','苹果型','梨型','匀称'];
 function renderMe(){
   const p=S.profile;
-  $('#me-av').textContent=p.name?p.name.slice(0,1):'轻';
+  
+  // 头像显示（支持自定义）
+  if(p.avatar) {
+    $('#me-av').style.backgroundImage = `url(${p.avatar})`;
+    $('#me-av').style.backgroundSize = 'cover';
+    $('#me-av').textContent = '';
+  } else {
+    $('#me-av').style.backgroundImage = 'none';
+    $('#me-av').textContent=p.name?p.name.slice(0,1):'轻';
+  }
+  
   $('#me-name').textContent=p.name||'未设置名字';
   const bmi=(p.height&&p.weight)?(p.weight/Math.pow(p.height/100,2)).toFixed(1):null;
   $('#me-meta').textContent=[p.gender,p.age?p.age+'岁':'',bmi?'BMI '+bmi:''].filter(Boolean).join(' · ')||'补全资料，计划更贴合';
@@ -35,6 +45,7 @@ function renderMe(){
   $('#sel-mile').value=S.settings.mile;
   $('#inp-goal').value=S.settings.goal;
   $('#inp-kcal').value=S.settings.kcal;
+  if($('#inp-checkins')) $('#inp-checkins').value=S.settings.dailyCheckIns || 1;
   $$('#seg-theme button').forEach(b=>b.classList.toggle('on',b.dataset.theme===S.settings.theme));
 }
 function bindSwitch(sel,key,after){
@@ -51,11 +62,66 @@ bindSwitch('#sw-auto','autoAdjust');
 $('#sel-mile').addEventListener('change',e=>{S.settings.mile=+e.target.value;save();renderCal()});
 $('#inp-goal').addEventListener('change',e=>{const v=parseFloat(e.target.value);if(!isNaN(v)){S.settings.goal=+v.toFixed(1);save();renderWeight()}});
 $('#inp-kcal').addEventListener('change',e=>{const v=parseInt(e.target.value);if(v>0){S.settings.kcal=v;save();if(S.settings.food)renderFood()}});
+$('#inp-checkins').addEventListener('change',e=>{const v=parseInt(e.target.value);if(v>0&&v<=5){S.settings.dailyCheckIns=v;save()}});
+
+// AI 管家设置
+$('#btn-assistant-settings').addEventListener('click', ()=>{
+  if(typeof openAssistantSettings === 'function') {
+    openAssistantSettings();
+  } else {
+    toast(null, '功能加载中', '请稍后再试', 'close');
+  }
+});
+
+// 视频管理
+$('#btn-videos').addEventListener('click', ()=>{
+  if(typeof openVideoManager === 'function') {
+    openVideoManager();
+  }
+});
+
+// 动作组管理
+$('#btn-exercise-groups').addEventListener('click', ()=>{
+  if(typeof openExerciseGroupManager === 'function') {
+    openExerciseGroupManager();
+  }
+});
+
+// 打卡小票库
+$('#btn-receipts').addEventListener('click', ()=>{
+  if(typeof openReceiptLibrary === 'function') {
+    openReceiptLibrary();
+  }
+});
+
+// 饮水历史
+$('#btn-water-history').addEventListener('click', ()=>{
+  if(typeof openWaterHistory === 'function') {
+    openWaterHistory();
+  }
+});
+
+// 餐饮历史
+$('#btn-meal-history').addEventListener('click', ()=>{
+  if(typeof openMealHistory === 'function') {
+    openMealHistory();
+  }
+});
 
 $('#btn-edit-profile').addEventListener('click',()=>{
   const p=S.profile;
   $('#sheet-body').innerHTML=`
     <h2>个人资料</h2>
+    <div class="field">
+      <label>头像</label>
+      <div style="display:flex;align-items:center;gap:12px">
+        <div class="avatar" id="preview-av" style="width:60px;height:60px;font-size:24px">${p.avatar?'':'轻'}</div>
+        <div style="flex:1">
+          <input class="inp" id="p-avatar" placeholder="输入图片 URL" value="${esc(p.avatar||'')}">
+          <p class="hint" style="margin:4px 0 0">可粘贴图片链接或使用 data:image/...</p>
+        </div>
+      </div>
+    </div>
     <div class="field"><label>名字</label><input class="inp" id="p-n" value="${esc(p.name)}" placeholder="怎么称呼你"></div>
     <div class="row2">
       <div class="field"><label>性别</label><select class="inp" id="p-g"><option value="">未选择</option>${['女','男','其他'].map(g=>`<option ${p.gender===g?'selected':''}>${g}</option>`).join('')}</select></div>
@@ -72,16 +138,38 @@ $('#btn-edit-profile').addEventListener('click',()=>{
     <div class="field"><label>起始体重 (kg) · 用于计算变化</label><input class="inp" id="p-sw" type="number" step="0.1" inputmode="decimal" value="${p.startWeight}"></div>
     <button class="btn w" id="p-ok">保存</button>`;
   openSheet();
+  
+  // 实时预览头像
+  $('#p-avatar').addEventListener('input', e => {
+    const url = e.target.value.trim();
+    const preview = $('#preview-av');
+    if(url) {
+      preview.style.backgroundImage = `url(${url})`;
+      preview.style.backgroundSize = 'cover';
+      preview.textContent = '';
+    } else {
+      preview.style.backgroundImage = 'none';
+      preview.textContent = '轻';
+    }
+  });
+  
+  // 初始预览
+  if(p.avatar) {
+    $('#preview-av').style.backgroundImage = `url(${p.avatar})`;
+    $('#preview-av').style.backgroundSize = 'cover';
+    $('#preview-av').textContent = '';
+  }
+  
   $('#p-ok').onclick=()=>{
     const g=id=>$(id).value.trim();
     Object.assign(S.profile,{
       name:g('#p-n'),gender:g('#p-g'),age:g('#p-a'),height:g('#p-h'),
-      birthday:g('#p-b'),shape:g('#p-s'),
+      birthday:g('#p-b'),shape:g('#p-s'),avatar:g('#p-avatar'),
       weight:parseFloat(g('#p-w'))||S.profile.weight,
       startWeight:parseFloat(g('#p-sw'))||S.profile.startWeight
     });
     const w=parseFloat(g('#p-w'));
-    if(!isNaN(w)&&w>20&&w<300 && !S.weights[TODAY_KEY()]) S.weights[TODAY_KEY()]=+w.toFixed(1);
+    if(!isNaN(w)&&w>20&&w<300 && !S.weights[TODAY_KEY()]) S.weights[TODAY_KEY()]={value:+w.toFixed(1),unit:'kg'};
     save(); closeSheet(); renderAll();
     toast(null,'已保存','资料更新完成','check');
   };

@@ -6,7 +6,7 @@ function boot(){
   applyTheme();
   // 首次：写入起始体重
   if(!Object.keys(S.weights).length && S.profile.weight){
-    S.weights[S.meta.installed||TODAY_KEY()]=S.profile.weight;
+    S.weights[S.meta.installed||TODAY_KEY()]={value:S.profile.weight, unit:'kg'};
     S.profile.startWeight=S.profile.weight;
     save();
   }
@@ -17,6 +17,14 @@ function boot(){
   // 日期跨天检测
   let last=TODAY_KEY();
   setInterval(()=>{ if(TODAY_KEY()!==last){ last=TODAY_KEY(); ensureToday(); renderAll() } }, 60000);
+  
+  // 每日跳跃模式选择（首次打开时）
+  setTimeout(() => {
+    const today = getDay(TODAY_KEY());
+    if(today && !today.jumpModeSelected && typeof showJumpModeSelection === 'function') {
+      showJumpModeSelection();
+    }
+  }, 1500);
 
   // 首次引导
   if(!S.profile.name && !localStorage.getItem(KEY+'.welcomed')){
@@ -30,7 +38,7 @@ function boot(){
         </div>
         <div class="field" style="margin-top:18px"><label>名字</label><input class="inp" id="w-n" placeholder="例如：恍恍"></div>
         <div class="row2">
-          <div class="field"><label>当前体重 (kg)</label><input class="inp" id="w-w" type="number" step="0.1" inputmode="decimal" value="54.8"></div>
+          <div class="field"><label>当前体重 (kg)</label><input class="inp" id="w-w" type="number" step="0.1" inputmode="decimal" placeholder="输入体重"></div>
           <div class="field"><label>目标体重 (kg)</label><input class="inp" id="w-g" type="number" step="0.1" inputmode="decimal" value="52.8"></div>
         </div>
         <p class="fs12 muted" style="margin:-4px 0 14px;line-height:1.6">计划表已内置：每天跳绳/燃脂操 + 薄背 + 核心 + 拉伸，体力好了就升级。</p>
@@ -39,7 +47,11 @@ function boot(){
       $('#w-ok').onclick=()=>{
         const n=$('#w-n').value.trim(), w=parseFloat($('#w-w').value), g=parseFloat($('#w-g').value);
         if(n) S.profile.name=n;
-        if(!isNaN(w)&&w>20&&w<300){ S.profile.weight=+w.toFixed(1); S.profile.startWeight=+w.toFixed(1); S.weights[TODAY_KEY()]=+w.toFixed(1) }
+        if(!isNaN(w)&&w>20&&w<300){ 
+          S.profile.weight=+w.toFixed(1); 
+          S.profile.startWeight=+w.toFixed(1); 
+          S.weights[TODAY_KEY()]={value:+w.toFixed(1), unit:'kg'};
+        }
         if(!isNaN(g)&&g>20&&g<300) S.settings.goal=+g.toFixed(1);
         save(); closeSheet(); renderAll();
         toast(null,'准备好了','今天的项目已经在等你了。','spark');

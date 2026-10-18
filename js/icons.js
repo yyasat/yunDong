@@ -58,5 +58,20 @@ const I = (() => {
     apple: s=>w(`<path d="M12 7.4c-3.4-2-6.8.3-6.8 4.6 0 4 2.9 8.4 5.1 8.4.8 0 1.2-.5 1.7-.5s.9.5 1.7.5c2.2 0 5.1-4.4 5.1-8.4 0-4.3-3.4-6.6-6.8-4.6z"/><path d="M12 7.4V4.6c0-1.1 1-2 2.2-2"/>`,s),
     coffee: s=>w(`<path d="M4.4 8.4h12v5.4a4.6 4.6 0 0 1-4.6 4.6H9a4.6 4.6 0 0 1-4.6-4.6z"/><path d="M16.4 9.8h1.6a2.4 2.4 0 0 1 0 4.8h-1.6"/><path d="M5.6 21h12.8"/>`,s),
     mountain: s=>w(`<path d="M2.6 19.4h18.8L14.8 7.2l-3 5-1.8-2.6z"/><circle cx="17.4" cy="6.4" r="1.9"/>`,s),
+    // 新增图标
+    play: s=>w(`<circle cx="12" cy="12" r="9.4"/><path d="M10 8.4l6 3.6-6 3.6z" fill="currentColor" stroke="none"/>`,s),
+    pause: s=>w(`<circle cx="12" cy="12" r="9.4"/><rect x="9.4" y="8.4" width="1.8" height="7.2" fill="currentColor" stroke="none"/><rect x="12.8" y="8.4" width="1.8" height="7.2" fill="currentColor" stroke="none"/>`,s),
+    stop: s=>w(`<circle cx="12" cy="12" r="9.4"/><rect x="8.4" y="8.4" width="7.2" height="7.2" fill="currentColor" stroke="none"/>`,s),
+    settings: s=>w(`<circle cx="12" cy="12" r="2.6"/><path d="M12 4.6v2.2M12 17.2v2.2M19.4 12h-2.2M6.8 12H4.6M17 7l-1.6 1.6M8.6 15.4L7 17M17 17l-1.6-1.6M8.6 8.6L7 7"/>`,s),
+    robot: s=>w(`<rect x="6.4" y="7.6" width="11.2" height="10.4" rx="2.4"/><circle cx="9.6" cy="11.2" r="1" fill="currentColor" stroke="none"/><circle cx="14.4" cy="11.2" r="1" fill="currentColor" stroke="none"/><path d="M9.6 14.4h4.8M12 4.6v3M8.4 7.6L6.8 6M15.6 7.6l1.6-1.6"/>`,s),
+    receipt: s=>w(`<path d="M5.4 3.4h13.2v17.2l-2.2-1.6-2.2 1.6-2.2-1.6-2.2 1.6-2.2-1.6-2.2 1.6z"/><path d="M8.4 8.4h7.2M8.4 12h7.2M8.4 15.6h4.8"/>`,s),
+    video: s=>w(`<rect x="2.8" y="5.4" width="18.4" height="13.2" rx="2.4"/><path d="M10 9.4l4.8 2.6-4.8 2.6z" fill="currentColor" stroke="none"/>`,s),
+    book: s=>w(`<path d="M4.6 4.6h14.8v14.8H4.6z"/><path d="M4.6 4.6v14.8c0 1.3 1.1 2.4 2.4 2.4h12.4v-17.2"/><path d="M8.4 9.4h7.2M8.4 13.2h7.2"/>`,s),
+    info: s=>w(`<circle cx="12" cy="12" r="9.4"/><path d="M12 11.2v5.2M12 7.6h.01"/>`,s),
+    link: s=>w(`<path d="M9.4 14.6l-2.2 2.2a3.1 3.1 0 0 1-4.4-4.4l2.2-2.2M14.6 9.4l2.2-2.2a3.1 3.1 0 0 0 4.4 4.4l-2.2 2.2M9.4 14.6l5.2-5.2"/>`,s),
+    refresh: s=>w(`<path d="M3.8 12a8.2 8.2 0 0 1 13.6-6.2L20.2 8.6M3.8 15.4l2.8-2.8a8.2 8.2 0 0 0 13.6 6.2"/><path d="M20.2 4.6v4h-4M3.8 19.4v-4h4"/>`,s),
+    user: s=>w(`<circle cx="12" cy="8.4" r="3.6"/><path d="M5.4 19.4c0-3.6 2.9-6.6 6.6-6.6s6.6 3 6.6 6.6"/>`,s),
+    avatar: s=>w(`<circle cx="12" cy="12" r="9.4"/><circle cx="12" cy="10" r="3"/><path d="M6.4 18.8c.8-2.4 3-4 5.6-4s4.8 1.6 5.6 4"/>`,s),
+    calendar2: s=>w(`<rect x="4.6" y="6.4" width="14.8" height="13.2" rx="2.4"/><path d="M8.4 4.6v3.6M15.6 4.6v3.6M4.6 11.2h14.8"/>`,s),
   };
 })();
