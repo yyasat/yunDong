@@ -5,10 +5,10 @@
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="theme-color" content="#eef1f5">
 <title>轻 · 每日运动打卡</title>
-<link rel="stylesheet" href="css/base.css">
-<link rel="stylesheet" href="css/components.css">
-<link rel="stylesheet" href="css/pages.css">
-<link rel="stylesheet" href="css/features.css">
+<link rel="stylesheet" href="base.css">
+<link rel="stylesheet" href="components.css">
+<link rel="stylesheet" href="pages.css">
+<link rel="stylesheet" href="features.css">
 <style>
 /* 引用页面内 SVG 渐变的规则保留内联，避免外部样式表中 url(#id) 的解析差异 */
 .chart-area{fill:url(#gradW)}
@@ -219,27 +219,27 @@
     <div class="card">
       <div class="setting-row" style="flex-direction:column;align-items:stretch;gap:12px">
         <div>
-          <div class="sl">${I.robot?I.robot(18):''} 锻炼管家</div>
+          <div class="sl" id="btn-assistant-settings-text">锻炼管家</div>
           <div class="ss">智能分析、评语、制定计划</div>
         </div>
-        <button class="btn w ghost" id="btn-assistant-settings">${I.settings?I.settings(16):''} 管家设置</button>
+        <button class="btn w ghost" id="btn-assistant-settings"><span id="btn-assistant-settings-btn">管家设置</span></button>
       </div>
     </div>
 
     <div class="sec-title">教学资源</div>
     <div class="card">
       <div class="setting-row" style="flex-direction:column;align-items:stretch;gap:8px">
-        <button class="btn w ghost" id="btn-videos">${I.video?I.video(16):''} 视频库 (${S.videos?S.videos.length:0})</button>
-        <button class="btn w ghost" id="btn-exercise-groups">${I.list(16)} 动作组管理</button>
-        <button class="btn w ghost" id="btn-receipts">${I.receipt?I.receipt(16):''} 打卡小票库</button>
+        <button class="btn w ghost" id="btn-videos"><span id="btn-videos-text">视频库</span></button>
+        <button class="btn w ghost" id="btn-exercise-groups"><span id="btn-exercise-groups-text">动作组管理</span></button>
+        <button class="btn w ghost" id="btn-receipts"><span id="btn-receipts-text">打卡小票库</span></button>
       </div>
     </div>
 
     <div class="sec-title">历史记录</div>
     <div class="card">
       <div class="setting-row" style="flex-direction:column;align-items:stretch;gap:8px">
-        <button class="btn w ghost" id="btn-water-history">${I.water(16)} 饮水历史</button>
-        <button class="btn w ghost" id="btn-meal-history">${I.food(16)} 餐饮历史</button>
+        <button class="btn w ghost" id="btn-water-history"><span id="btn-water-history-text">饮水历史</span></button>
+        <button class="btn w ghost" id="btn-meal-history"><span id="btn-meal-history-text">餐饮历史</span></button>
       </div>
     </div>
 
@@ -266,24 +266,24 @@
 </div>
 
 <!-- 普通脚本按原顺序加载，共享全局作用域，行为与单文件一致 -->
-<script src="js/icons.js"></script>
-<script src="js/store.js"></script>
-<script src="js/timer.js"></script>
-<script src="js/assistant.js"></script>
-<script src="js/receipt.js"></script>
-<script src="js/video.js"></script>
-<script src="js/exercise.js"></script>
-<script src="js/history.js"></script>
-<script src="js/today.js"></script>
-<script src="js/quiz.js"></script>
-<script src="js/milestone.js"></script>
-<script src="js/calendar.js"></script>
-<script src="js/weight.js"></script>
-<script src="js/food.js"></script>
-<script src="js/tasks.js"></script>
-<script src="js/settings.js"></script>
-<script src="js/theme.js"></script>
-<script src="js/ui.js"></script>
-<script src="js/main.js"></script>
+<script src="icons.js"></script>
+<script src="store.js"></script>
+<script src="timer.js"></script>
+<script src="assistant.js"></script>
+<script src="receipt.js"></script>
+<script src="video.js"></script>
+<script src="exercise.js"></script>
+<script src="history.js"></script>
+<script src="today.js"></script>
+<script src="quiz.js"></script>
+<script src="milestone.js"></script>
+<script src="calendar.js"></script>
+<script src="weight.js"></script>
+<script src="food.js"></script>
+<script src="tasks.js"></script>
+<script src="settings.js"></script>
+<script src="theme.js"></script>
+<script src="ui.js"></script>
+<script src="main.js"></script>
 </body>
 </html>
